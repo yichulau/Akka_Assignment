@@ -10,7 +10,7 @@ import scalafxml.core.macros.sfxml
 class WindowsController (private val serverIP: TextField,
                          private val port: TextField,
                          private val txtName: TextField,
-                         private val friends: ListView[Person],
+                         private val friendList: ListView[Person],
                          private val joinStatusLabel: Label,
                         ){
 
@@ -18,7 +18,7 @@ class WindowsController (private val serverIP: TextField,
 
   Server.players.onChange((x, y) => {
     Platform.runLater {
-      friends.items = ObservableBuffer(x.toList)
+      friendList.items = ObservableBuffer(x.toList)
     }
   })
 
@@ -33,7 +33,7 @@ class WindowsController (private val serverIP: TextField,
     }
 
     def displayMemberList(x: List[Person]): Unit ={
-      friends.items = ObservableBuffer(x)
+      friendList.items = ObservableBuffer(x)
     }
 
 }

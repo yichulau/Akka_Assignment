@@ -18,7 +18,7 @@ class Client extends Actor {
 
   def receive = {
     case StartJoin(server, port, name) =>
-      val serverRef = context.actorSelection(s"akka.tcp://ball@$server:$port/user/server")
+      val serverRef = context.actorSelection(s"akka.tcp://chat@$server:$port/user/server")
       val result = serverRef ? Join(self, name)
       result.foreach(x => {
         if (x == Client.Joined) {
