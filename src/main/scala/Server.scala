@@ -1,5 +1,7 @@
+import Chatroom.myConf
 import Client.Joined
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+
 import scalafx.collections.ObservableHashSet
 import Server.Join
 import akka.pattern.ask
