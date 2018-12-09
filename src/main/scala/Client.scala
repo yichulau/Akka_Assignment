@@ -29,7 +29,7 @@ class Client extends Actor {
       result.foreach {
         case true =>
           Platform.runLater {
-            Chatroom.controller.displayJoinStatus("You have joined")
+            Chatroom.controller.displayJoinStatus("You have \n  joined")
           }
         case false =>
           Platform.runLater {
@@ -45,7 +45,7 @@ class Client extends Actor {
   def joined: Receive = {
     case StartJoin(serverActorRef, x) =>
       Platform.runLater {
-        Chatroom.controller.displayJoinStatus("You have already joined")
+        Chatroom.controller.displayJoinStatus("You have \n already joined")
       }
   }
 }
