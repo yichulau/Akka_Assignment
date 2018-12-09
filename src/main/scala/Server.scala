@@ -48,15 +48,24 @@ class Server extends Actor{
       }
     case NewMessage(clientRef,serverRef,messageStr) =>
       val timestamp: Long = System.currentTimeMillis / 1000
-      val message = new Message(clientRef, messageStr, timestamp)
-      Server.messages.append(message)
 
-      Server.members.foreach { member =>
-        member.serverRef ! Server.Messages(Server.messages)
+      val person = Server.members.find {
+        person => person.clientRef == clientRef
       }
+      person.foreach {
+        p =>
+          val message = new Message(p, messageStr, timestamp)
+          Server.messages.append(message)
+
+          Server.members.foreach { member =>
+            member.serverRef ! Server.Messages(Server.messages)
+          }
+      }
+
     case Messages(messages) =>
       Platform.runLater {
         Chatroom.controller.displayMessagesList(messages.toList)
+
       }
   }
 

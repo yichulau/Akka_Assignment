@@ -47,7 +47,7 @@ class WindowsController (
 
   def displayMessagesList(messages: List[Message]): Unit = {
     val messageTexts: List[String] = messages.map {
-      message => message.text
+      message => message.sender.name + ": " + message.text
     }
     ChatBox.items = ObservableBuffer(messageTexts)
   }
