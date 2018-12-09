@@ -13,18 +13,18 @@
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <Text layoutX="24.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to chatroom/Whiteboard" />
-            <ListView layoutX="24.0" layoutY="77.0" prefHeight="164.0" prefWidth="267.0" style="-fx-background-color: lightgrey;" />
+            <ListView fx:id="ChatBox" layoutX="24.0" layoutY="77.0" prefHeight="164.0" prefWidth="267.0" style="-fx-background-color: lightgrey;" />
             <ListView fx:id="friendList" layoutX="350.0" layoutY="77.0" prefHeight="165.0" prefWidth="220.0" style="-fx-background-color: lightgrey;" />
             <Text layoutX="24.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Chat Room:" />
             <Text layoutX="350.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Friends:" />
-            <TextField layoutX="24.0" layoutY="268.0" prefHeight="26.0" prefWidth="215.0" style="-fx-background-color: lightgrey;" />
+            <TextField fx:id="ChatMessage" layoutX="24.0" layoutY="268.0" prefHeight="26.0" prefWidth="215.0" style="-fx-background-color: lightgrey;" />
             <TextField fx:id="port" layoutX="268.0" layoutY="323.0" prefHeight="26.0" prefWidth="97.0" style="-fx-background-color: lightgrey;" />
             <TextField fx:id="txtName" layoutX="87.0" layoutY="323.0" prefHeight="26.0" prefWidth="104.0" style="-fx-background-color: lightgrey;" />
             <TextField fx:id="serverIP" layoutX="443.0" layoutY="323.0" prefHeight="26.0" prefWidth="102.0" style="-fx-background-color: lightgrey;" />
             <Text layoutX="24.0" layoutY="341.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" />
             <Text layoutX="385.0" layoutY="341.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server:" />
             <Text layoutX="215.0" layoutY="341.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port:" />
-            <Button layoutX="262.0" layoutY="268.0" mnemonicParsing="false" text="Send" />
+            <Button layoutX="262.0" layoutY="268.0" mnemonicParsing="false" onAction="#handleJoin" text="Send" />
             <Button layoutX="433.0" layoutY="354.0" mnemonicParsing="false" onAction="#handleJoin" text="Click here To Join" />
             <Label layoutX="222.0" layoutY="370.0" text="Join Status:" />
             <Label fx:id="joinStatusLabel" layoutX="299.0" layoutY="371.0" text="Label" />

@@ -63,6 +63,5 @@ object Server{
   case class Join(myRef: ActorRef, serverActorRef: ActorRef, name:String)
   case class Members(members: Iterable[Person])
 
-  case class SendMessage(myRef, ActorRef, serverActorRef: ActorRef, message: Message)
   case class Messages(messages: Iterable[Message])
 }

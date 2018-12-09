@@ -52,7 +52,7 @@ object Client {
   var members: Option[Iterable[Person]] = None
 
 //  case class Joined(members: Iterable[Person])
-
+  case class SendMessage(serverActorRef: ActorRef, message: String)
   case class StartJoin(serverActorRef: ActorRef, name: String)
 //  case class Members(member: List[Person])
 
