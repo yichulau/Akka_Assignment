@@ -36,7 +36,9 @@ class Client extends Actor {
             Chatroom.controller.displayJoinStatus("Error")
           }
       }
-      context.become(joined)
+//      context.become(joined)
+    case SendMessage(serverActorRef, messageStr) =>
+      val result = remoteServerRef ? NewMessage(self, serverActorRef, messageStr)
     case _ =>
   }
 

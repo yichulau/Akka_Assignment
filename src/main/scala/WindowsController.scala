@@ -12,7 +12,7 @@ class WindowsController (
                          private val friendList: ListView[Person],
                          private val joinStatusLabel: Label,
                          private val ChatMessage: TextField,
-                         private val ChatBox: ListView[Message],
+                         private val ChatBox: ListView[String],
                         ){
 
   var clientActorRef: Option[ActorRef] = None
@@ -44,5 +44,12 @@ class WindowsController (
     def displayMemberList(x: List[Person]): Unit ={
       friendList.items = ObservableBuffer(x)
     }
+
+  def displayMessagesList(messages: List[Message]): Unit = {
+    val messageTexts: List[String] = messages.map {
+      message => message.text
+    }
+    ChatBox.items = ObservableBuffer(messageTexts)
+  }
 
 }

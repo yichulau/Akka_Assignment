@@ -24,7 +24,7 @@
             <Text layoutX="24.0" layoutY="341.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" />
             <Text layoutX="385.0" layoutY="341.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server:" />
             <Text layoutX="215.0" layoutY="341.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port:" />
-            <Button layoutX="262.0" layoutY="268.0" mnemonicParsing="false" onAction="#handleJoin" text="Send" />
+            <Button layoutX="262.0" layoutY="268.0" mnemonicParsing="false" onAction="#handleSend" text="Send" />
             <Button layoutX="433.0" layoutY="354.0" mnemonicParsing="false" onAction="#handleJoin" text="Click here To Join" />
             <Label layoutX="222.0" layoutY="370.0" text="Join Status:" />
             <Label fx:id="joinStatusLabel" layoutX="299.0" layoutY="371.0" text="Label" />

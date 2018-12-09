@@ -2,7 +2,7 @@ import Chatroom.myConf
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
 import scalafx.collections.ObservableHashSet
-import Server.{Join, Members}
+import Server.{Join, Members, Messages, NewMessage}
 import akka.pattern.ask
 import akka.remote.DisassociatedEvent
 import akka.stream.Server
@@ -21,9 +21,9 @@ case class Person(clientRef: ActorRef, serverRef: ActorRef, name: String){
   }
 }
 
-case class Message(clientRef: ActorRef, text: String, timestamp: Long) {
+case class Message(sender: Person, text: String, timestamp: Long) {
   override def toString: String = {
-    clientRef.toString() + timestamp.toString
+    sender.name.toString() + timestamp.toString
   }
 }
 
@@ -43,9 +43,20 @@ class Server extends Actor{
       }
       // Client side code
     case Members(members) =>
-      println(members)
       Platform.runLater {
         Chatroom.controller.displayMemberList(members.toList)
+      }
+    case NewMessage(clientRef,serverRef,messageStr) =>
+      val timestamp: Long = System.currentTimeMillis / 1000
+      val message = new Message(clientRef, messageStr, timestamp)
+      Server.messages.append(message)
+
+      Server.members.foreach { member =>
+        member.serverRef ! Server.Messages(Server.messages)
+      }
+    case Messages(messages) =>
+      Platform.runLater {
+        Chatroom.controller.displayMessagesList(messages.toList)
       }
   }
 
@@ -60,8 +71,11 @@ class Server extends Actor{
 
 object Server{
   var members: ArrayBuffer[Person] = new ArrayBuffer[Person]()
+  var messages: ArrayBuffer[Message] = new ArrayBuffer[Message]()
+
   case class Join(myRef: ActorRef, serverActorRef: ActorRef, name:String)
   case class Members(members: Iterable[Person])
 
+  case class NewMessage(myRef: ActorRef, serverActorRef: ActorRef, message: String)
   case class Messages(messages: Iterable[Message])
 }
