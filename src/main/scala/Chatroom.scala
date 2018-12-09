@@ -21,7 +21,12 @@ object Chatroom extends JFXApp{
   val system = ActorSystem("chat", myConf)
 //  val serverRef = system.actorOf(Props[Server](), "server")
   //create client actor
-  val clientRef = system.actorOf(Props[Client], "client")
+
+  val r = scala.util.Random
+  val randomInt = r.nextInt(100)
+
+  val clientRef = system.actorOf(Props[Client], "client"+randomInt.toString)
+  val serverRef = system.actorOf(Props[Server], "server")
 
   val loader = new FXMLLoader(null, NoDependencyResolver)
   loader.load(getClass.getResourceAsStream("window.fxml"))
@@ -29,6 +34,7 @@ object Chatroom extends JFXApp{
   val borderPane: jfsl.BorderPane = loader.getRoot[jfsl.BorderPane]
   val controller = loader.getController [WindowsController#Controller]()
   controller.clientActorRef = Option(clientRef)
+  controller.serverActorRef = Option(serverRef)
 
   stage = new PrimaryStage{
     scene = new Scene(){
@@ -72,6 +78,7 @@ object Chatroom extends JFXApp{
          |
  |  actor {
          |    provider = "akka.remote.RemoteActorRefProvider"
+         |    enable-additional-serialization-bindings = on
          |  }
          |
  |  remote {

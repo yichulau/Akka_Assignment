@@ -7,25 +7,22 @@ import scalafx.scene.control.{Label, ListView, TextField}
 import scalafxml.core.macros.sfxml
 
 @sfxml
-class WindowsController (private val serverIP: TextField,
-                         private val port: TextField,
+class WindowsController (
                          private val txtName: TextField,
                          private val friendList: ListView[Person],
                          private val joinStatusLabel: Label,
                         ){
 
   var clientActorRef: Option[ActorRef] = None
-
-  Server.players.onChange((x, y) => {
-    Platform.runLater {
-      friendList.items = ObservableBuffer(x.toList)
-    }
-  })
+  var serverActorRef: Option[ActorRef] = None
 
   def handleJoin(actionEvent: ActionEvent) {
     //ask the client actor to joined the server based on IP
     clientActorRef foreach { ref =>
-      ref ! StartJoin(serverIP.text.value, port.text.value, txtName.text.value)
+      serverActorRef foreach {
+        serverRef =>
+          ref ! StartJoin(serverRef, txtName.text.value)
+      }
     }
   }
     def displayJoinStatus(text: String): Unit = {

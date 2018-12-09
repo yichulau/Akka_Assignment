@@ -1,60 +1,61 @@
 import Server.Join
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, Props}
 import Client._
 import Server._
 import Chatroom.system
 import akka.pattern.ask
 import akka.remote.DisassociatedEvent
 import akka.util.Timeout
-import scalafx.application.Platform
 
+import scala.collection.immutable.HashMap
+import scala.collection.mutable.ArrayBuffer
+import scalafx.application.Platform
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 class Client extends Actor {
+
+  val actorString = "akka.tcp://chat@127.0.0.1:6000/user/server"
+  val remoteServerRef = Await.result(context.actorSelection(actorString).resolveOne()(10 seconds), 10 seconds)
+
   implicit val mytimeout = new Timeout(10 seconds)
   context.system.eventStream.subscribe(self, classOf[akka.remote.DisassociatedEvent])
 
   def receive = {
-    case StartJoin(server, port, name) =>
-      val serverRef = context.actorSelection(s"akka.tcp://chat@$server:$port/user/server")
-      val result = serverRef ? Join(self, name)
-      result.foreach(x => {
-        if (x == Client.Joined) {
+    case StartJoin(serverActorRef, name) =>
+
+      val result = remoteServerRef ? Join(self, serverActorRef, name)
+      result.foreach {
+        case true =>
           Platform.runLater {
-            Chatroom.controller.displayJoinStatus("You have Joined")
+            Chatroom.controller.displayJoinStatus("You have joined")
           }
-          context.become(joined)
-        } else {
+        case false =>
           Platform.runLater {
             Chatroom.controller.displayJoinStatus("Error")
           }
-        }
-      })
+      }
+      context.become(joined)
     case _ =>
   }
 
   def joined: Receive = {
-    case StartJoin(x, y, z) =>
+    case StartJoin(serverActorRef, x) =>
       Platform.runLater {
-        Chatroom.controller.displayJoinStatus("You have already Joined")
-      }
-
-    case Members(list) =>
-      Client.memberList = Option(list.filterNot(x => x.ref == self))
-      Client.memberIter = Option(Iterator.continually(Client.memberList.get.map(_.ref)).flatten)
-      Platform.runLater {
-        Chatroom.controller.displayMemberList(memberList.getOrElse(List()).toList)
+        Chatroom.controller.displayJoinStatus("You have already joined")
       }
   }
 }
 
 object Client {
-  var memberList: Option[Iterable[Person]] = None
-  var memberIter: Option[Iterator[ActorRef]] = None
-  case object Joined
-  case class StartJoin(serverIp: String, port: String,name: String)
-  case class Members(member:Iterable[Person])
+  var members: Option[Iterable[Person]] = None
+
+//  case class Joined(members: Iterable[Person])
+
+  case class StartJoin(serverActorRef: ActorRef, name: String)
+//  case class Members(member: List[Person])
+
+//  case class SendMessage()
 
 }
