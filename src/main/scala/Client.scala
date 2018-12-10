@@ -36,6 +36,8 @@ class Client extends Actor {
             Chatroom.controller.displayJoinStatus("Error")
           }
       }
+    case StartLeave() =>
+      remoteServerRef ! Leave(self)
 //      context.become(joined)
     case SendMessage(serverActorRef, messageStr) =>
       val result = remoteServerRef ? NewMessage(self, serverActorRef, messageStr)
@@ -56,6 +58,7 @@ object Client {
 //  case class Joined(members: Iterable[Person])
   case class SendMessage(serverActorRef: ActorRef, message: String)
   case class StartJoin(serverActorRef: ActorRef, name: String)
+  case class StartLeave()
 //  case class Members(member: List[Person])
 
 //  case class SendMessage()

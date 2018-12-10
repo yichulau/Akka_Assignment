@@ -2,10 +2,9 @@ import Chatroom.myConf
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
 import scalafx.collections.ObservableHashSet
-import Server.{Join, Members, Messages, NewMessage}
+import Server._
 import akka.pattern.ask
-import akka.remote.DisassociatedEvent
-import akka.stream.Server
+import akka.remote.{DisassociatedEvent, ShutDownAssociation}
 import akka.util.Timeout
 
 import scala.collection.immutable.HashMap
@@ -31,6 +30,32 @@ class Server extends Actor{
   implicit val timeout: Timeout = Timeout(10 second)
   context.system.eventStream.subscribe(self, classOf[akka.remote.DisassociatedEvent])
 
+  def broadcastMembers(): Unit = {
+    Server.members.foreach { member =>
+      member.serverRef ! Server.Members(Server.members)
+    }
+  }
+
+  def broadcastMessages(): Unit = {
+    Server.members.foreach { member =>
+      member.serverRef ! Server.Messages(Server.messages)
+    }
+  }
+
+  def leaveRoom(clientRef: ActorRef): Unit = {
+    val memberIndex = Server.members.indexWhere {
+      person => person.clientRef == clientRef
+    }
+    memberIndex match {
+      case -1 =>
+        println("Not a member")
+      case _ =>
+        Server.members.remove(memberIndex)
+        broadcastMembers()
+
+    }
+  }
+
   def receive = {
     // Server side code
     case Join(clientRef, serverRef, name) =>
@@ -39,11 +64,12 @@ class Server extends Actor{
       sender ! true
       // send the new member the list of messages
       serverRef ! Server.Messages(Server.messages)
+      broadcastMembers()
 
-      Server.members.foreach { member =>
-        member.serverRef ! Server.Members(Server.members)
-      }
-      // Client side code
+    case Leave(clientRef) =>
+      leaveRoom(clientRef)
+
+    // Client side code
     case Members(members) =>
       Platform.runLater {
         Chatroom.controller.displayMemberList(members.toList)
@@ -58,10 +84,7 @@ class Server extends Actor{
         p =>
           val message = new Message(p, messageStr, timestamp)
           Server.messages.append(message)
-
-          Server.members.foreach { member =>
-            member.serverRef ! Server.Messages(Server.messages)
-          }
+          broadcastMessages()
       }
 
     case Messages(messages) =>
@@ -84,6 +107,7 @@ object Server{
   var messages: ArrayBuffer[Message] = new ArrayBuffer[Message]()
 
   case class Join(myRef: ActorRef, serverActorRef: ActorRef, name:String)
+  case class Leave(clientRef: ActorRef)
   case class Members(members: Iterable[Person])
 
   case class NewMessage(myRef: ActorRef, serverActorRef: ActorRef, message: String)

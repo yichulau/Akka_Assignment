@@ -9,6 +9,8 @@ import scalafx.scene.Scene
 import scalafxml.core.{FXMLLoader, NoDependencyResolver}
 import javafx.scene.{layout => jfsl}
 
+import Client.StartLeave
+
 import scalafx.Includes._
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
@@ -43,6 +45,10 @@ object Chatroom extends JFXApp{
   }
 
   stage.onCloseRequest = handle{
+    controller.clientActorRef foreach {
+      ref =>
+        ref ! StartLeave()
+    }
     system.terminate()
   }
 
