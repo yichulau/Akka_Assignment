@@ -37,6 +37,8 @@ class Server extends Actor{
       val person = new Person(clientRef, serverRef, name)
       Server.members.append(person)
       sender ! true
+      // send the new member the list of messages
+      serverRef ! Server.Messages(Server.messages)
 
       Server.members.foreach { member =>
         member.serverRef ! Server.Members(Server.members)
@@ -65,7 +67,6 @@ class Server extends Actor{
     case Messages(messages) =>
       Platform.runLater {
         Chatroom.controller.displayMessagesList(messages.toList)
-
       }
   }
 

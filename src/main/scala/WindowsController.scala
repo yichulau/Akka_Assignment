@@ -24,6 +24,8 @@ class WindowsController (
       serverActorRef foreach {
         serverRef =>
           ref ! SendMessage(serverRef, ChatMessage.text.value)
+          ChatMessage.setText("")
+          ChatMessage.requestFocus()
       }
   }
   }
@@ -34,6 +36,7 @@ class WindowsController (
       serverActorRef foreach {
         serverRef =>
           ref ! StartJoin(serverRef, txtName.text.value)
+          ChatMessage.requestFocus()
       }
     }
   }
